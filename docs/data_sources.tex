@@ -1,0 +1,300 @@
+\documentclass[11pt]{article}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\definecolor{included}{RGB}{209,240,211}
+\definecolor{excluded}{RGB}{250,214,214}
+\definecolor{darkgray}{RGB}{60,60,60}
+\definecolor{linkblue}{RGB}{0,90,160}
+
+\hypersetup{colorlinks=true, linkcolor=darkgray, urlcolor=linkblue, citecolor=darkgray}
+\titleformat{\section}{\normalfont\Large\bfseries\color{darkgray}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{0.6em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{Nu(Pr, Ra) dataset --- sources and provenance}}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newcommand{\legend}{%
+  \noindent
+  \colorbox{included}{\rule{0pt}{1.6ex}\hspace{1.6ex}} \ \textbf{Included} in \texttt{nu\_dataset\_model.csv} \qquad
+  \colorbox{excluded}{\rule{0pt}{1.6ex}\hspace{1.6ex}} \ \textbf{Excluded} (see Comment column)
+  \vspace{0.5em}
+}
+
+\title{\textbf{Nu(Pr, Ra) Dataset: Sources and Provenance}\\[0.3em]
+\large Machine-learning prediction of the Nusselt number in 2D Rayleigh-B\'enard convection}
+\author{Compiled by Manya, for the project with Shreshthi and Prof.\ Ambrish Pandey}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section*{Overview}
+This document records exactly where every number in
+\texttt{data/nu\_dataset\_model.csv} came from. Section~3.3 of Shreshthi \&
+Pandey's paper (\emph{Turbulent Prandtl number in the near-wall region of
+thermal convection}) trains a random forest regressor to predict the Nusselt
+number $Nu$ from the Prandtl number $Pr$ and Rayleigh number $Ra$, using 55
+data points drawn from five cited papers plus the paper's own simulations.
+This document reproduces the relevant tables from the four sources we have
+obtained so far, highlights which rows were kept, and comments on why the
+rest were left out.
+
+\legend
+
+\section*{References}
+\begin{enumerate}[leftmargin=1.6em, itemsep=0.6em]
+\item Shreshthi and A.\ Pandey. \emph{Turbulent Prandtl number in the
+near-wall region of thermal convection.} Project paper (\texttt{papers/shreshthi\_pandey\_2026\_turbulent\_prandtl\_number.pdf}).
+\item A.\ Pandey. \emph{Thermal boundary layer structure in
+low-Prandtl-number turbulent convection.} J.\ Fluid Mech., 910:A13, 2021.
+\href{https://doi.org/10.1017/jfm.2020.961}{doi:10.1017/jfm.2020.961} ---
+\href{https://arxiv.org/abs/2101.03051}{arXiv:2101.03051}.
+\item A.\ Pandey and K.\,R.\ Sreenivasan. \emph{Transient and steady
+convection in two dimensions.} J.\ Fluid Mech., 1015:A42, 2025.
+\href{https://doi.org/10.1017/jfm.2025.10357}{doi:10.1017/jfm.2025.10357} ---
+\href{https://arxiv.org/abs/2503.03080}{arXiv:2503.03080}.
+\item A.\ Pandey, H.\ Tiwari, and K.\,R.\ Sreenivasan. \emph{Thermal
+convection in 1, 2, 3, and 4 dimensions.} J.\ Fluid Mech., in press, 2026.
+\href{https://arxiv.org/abs/2607.26372}{arXiv:2607.26372}.
+\item E.\,P.\ van der Poel, R.\,J.\,A.\,M.\ Stevens, and D.\ Lohse.
+\emph{Comparison between two- and three-dimensional Rayleigh-B\'enard
+convection.} J.\ Fluid Mech., 736:177--194, 2013.
+\href{https://doi.org/10.1017/jfm.2013.488}{doi:10.1017/jfm.2013.488}.
+\textbf{\color{excluded!60!black}Not yet obtained} --- reports $Nu$ only as
+scatter plots (Fig.~5a, 6b), not a table; paywalled, needs institutional
+access to digitize.
+\item Y.\ Zhang and Q.\ Zhou. \emph{Low-Prandtl-number effects on
+global and local statistics in two-dimensional Rayleigh-B\'enard
+convection.} Phys.\ Fluids, 36(1):015107, 2024.
+\href{https://doi.org/10.1063/5.0175011}{doi:10.1063/5.0175011}.
+\textbf{\color{excluded!60!black}Not yet obtained} --- fully paywalled, no
+open copy found; needs institutional access.
+\end{enumerate}
+
+\noindent All four obtained sources describe the \emph{same} physical
+setup: a closed 2D square box ($\Gamma=1$), no-slip walls, isothermal
+top/bottom plates, adiabatic sidewalls, solved with the same spectral-element
+code. This is confirmed empirically, not just from the papers' text: several
+rows below report the exact same $Nu$ to the decimal at the same $Pr, Ra$ in
+two different papers --- only possible if it is literally the same
+simulation, reused across papers.
+
+\section{Present paper --- Shreshthi \& Pandey, Table 1}
+Closed 2D box, $Ra=10^9$ fixed, $Pr$ varied. All 13 rows are the paper's own
+flagship simulations and are included.
+
+\begin{longtable}{l l l l}
+\caption{Present paper, Table 1 ($Ra=10^9$).}\label{tab:present}\\
+\toprule
+\textbf{Pr} & \textbf{Ra} & \textbf{Nu} & \textbf{Comment} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Pr} & \textbf{Ra} & \textbf{Nu} & \textbf{Comment} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\rowcolor{included} 0.021 & $10^{9}$ & 37.43 & Included \\
+\rowcolor{included} 0.05 & $10^{9}$ & 41.51 & Included \\
+\rowcolor{included} 0.1 & $10^{9}$ & 42.72 & Included \\
+\rowcolor{included} 0.2 & $10^{9}$ & 45.98 & Included \\
+\rowcolor{included} 0.35 & $10^{9}$ & 48.1 & Included \\
+\rowcolor{included} 0.5 & $10^{9}$ & 48.64 & Included \\
+\rowcolor{included} 0.7 & $10^{9}$ & 49.22 & Included \\
+\rowcolor{included} 1 & $10^{9}$ & 50.87 & Included \\
+\rowcolor{included} 2 & $10^{9}$ & 51.09 & Included \\
+\rowcolor{included} 4.38 & $10^{9}$ & 52.67 & Included \\
+\rowcolor{included} 7 & $10^{9}$ & 52.27 & Included \\
+\rowcolor{included} 20 & $10^{9}$ & 53.41 & Included \\
+\rowcolor{included} 50 & $10^{9}$ & 52.12 & Included \\
+\end{longtable}
+\section{Pandey (2021), Table 1}
+Closed 2D box, $Pr=0.021$ fixed, $Ra$ varied. Runs labelled with an
+`a' (e.g.\ 3a) are resolution checks of the preceding run --- the same
+physical point, re-run at finer mesh, to confirm numerical convergence.
+Only the base run is kept; its resolution-check twin is excluded since it
+is not an independent data point.
+
+\begin{longtable}{l l l l}
+\caption{Pandey (2021), Table 1 ($Pr=0.021$).}\label{tab:pandey2021}\\
+\toprule
+\textbf{Run} & \textbf{Ra} & \textbf{Nu} & \textbf{Comment} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Run} & \textbf{Ra} & \textbf{Nu} & \textbf{Comment} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\rowcolor{included} 1 & $5\times10^{5}$ & 5.2 & Included \\
+\rowcolor{excluded} 1a & $5\times10^{5}$ & 5.2 & Resolution check of run 1 \\
+\rowcolor{included} 2 & $10^{6}$ & 6.3 & Included \\
+\rowcolor{excluded} 2a & $10^{6}$ & 6.3 & Resolution check of run 2 \\
+\rowcolor{included} 3 & $10^{7}$ & 10.8 & Included \\
+\rowcolor{excluded} 3a & $10^{7}$ & 11.1 & Resolution check of run 3 \\
+\rowcolor{included} 4 & $10^{8}$ & 19.6 & Included \\
+\rowcolor{included} 5 & $10^{9}$ & 35.4 & Included \\
+\rowcolor{excluded} 5a & $10^{9}$ & 36.2 & Resolution check of run 5 \\
+\end{longtable}
+\section{Pandey, Tiwari \& Sreenivasan (2026, in press)}
+\subsection*{Table 1 --- closed 2D box, $Pr=0.021$ and $Pr=0.05$}
+The $Ra=10^9$ rows for both $Pr$ values report exactly the same $Nu$
+as the present paper's own Table 1 (37.43 and 41.51 respectively) --- the
+same simulation, reused across papers. Excluded here to avoid counting it
+twice.
+
+\begin{longtable}{l l l l}
+\caption{Pandey, Tiwari \& Sreenivasan (2026), Table 1.}\label{tab:pandey2026t1}\\
+\toprule
+\textbf{Pr} & \textbf{Ra} & \textbf{Nu} & \textbf{Comment} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Pr} & \textbf{Ra} & \textbf{Nu} & \textbf{Comment} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\rowcolor{included} 0.021 & $10^{7}$ & 10.97 & Included \\
+\rowcolor{included} 0.021 & $2\times10^{7}$ & 13.04 & Included \\
+\rowcolor{included} 0.021 & $3\times10^{7}$ & 14.42 & Included \\
+\rowcolor{included} 0.021 & $5\times10^{7}$ & 16.58 & Included \\
+\rowcolor{included} 0.021 & $10^{8}$ & 19.68 & Included \\
+\rowcolor{included} 0.021 & $4\times10^{8}$ & 28.32 & Included \\
+\rowcolor{excluded} 0.021 & $10^{9}$ & 37.43 & Matches Present paper exactly -- duplicate \\
+\rowcolor{included} 0.05 & $10^{7}$ & 12.41 & Included \\
+\rowcolor{included} 0.05 & $2\times10^{7}$ & 14.52 & Included \\
+\rowcolor{included} 0.05 & $3\times10^{7}$ & 16.06 & Included \\
+\rowcolor{included} 0.05 & $10^{8}$ & 21.64 & Included \\
+\rowcolor{included} 0.05 & $3\times10^{8}$ & 29.27 & Included \\
+\rowcolor{included} 0.05 & $5\times10^{8}$ & 33.5 & Included \\
+\rowcolor{excluded} 0.05 & $10^{9}$ & 41.51 & Matches Present paper exactly -- duplicate \\
+\end{longtable}
+\subsection*{Table 2 --- ``RBC-P'', $Pr=1$, $D=2$ column}
+This table uses a different solver (DHARA, finite-difference, versus
+the spectral-element code used everywhere else) for a 1D/2D/3D/4D
+dimension-comparison study. It is a \emph{different physical configuration}
+from the closed box used in every other table here: at $Pr=1, Ra=10^8$ it
+reports $Nu=13.6$, versus $Nu=25.01$ in Pandey \& Sreenivasan (2025)'s Table
+1 at the identical $Pr, Ra$ (Table~\ref{tab:ps2025}). That gap is far too
+large to be numerical noise. \textbf{All rows here are excluded} from the
+training set.
+
+\begin{longtable}{l l l}
+\caption{Pandey, Tiwari \& Sreenivasan (2026), Table 2 (RBC-P, $D=2$, $Pr=1$).}\label{tab:pandey2026t2}\\
+\toprule
+\textbf{Ra} & \textbf{Nu} & \textbf{Comment} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Ra} & \textbf{Nu} & \textbf{Comment} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\rowcolor{excluded} $2\times10^{5}$ & 4.8 & Different configuration (RBC-P) -- excluded \\
+\rowcolor{excluded} $5\times10^{5}$ & 6.2 & Different configuration (RBC-P) -- excluded \\
+\rowcolor{excluded} $10^{6}$ & 6.9 & Different configuration (RBC-P) -- excluded \\
+\rowcolor{excluded} $2\times10^{6}$ & 8.5 & Different configuration (RBC-P) -- excluded \\
+\rowcolor{excluded} $5\times10^{6}$ & 10.3 & Different configuration (RBC-P) -- excluded \\
+\rowcolor{excluded} $10^{7}$ & 11.8 & Different configuration (RBC-P) -- excluded \\
+\rowcolor{excluded} $2\times10^{7}$ & 13.1 & Different configuration (RBC-P) -- excluded \\
+\rowcolor{excluded} $5\times10^{7}$ & 13.3 & Different configuration (RBC-P) -- excluded \\
+\rowcolor{excluded} $10^{8}$ & 13.6 & Different configuration (RBC-P) -- excluded \\
+\rowcolor{excluded} $2\times10^{8}$ & 15.5 & Different configuration (RBC-P) -- excluded \\
+\rowcolor{excluded} $5\times10^{8}$ & 20.4 & Different configuration (RBC-P) -- excluded \\
+\rowcolor{excluded} $10^{9}$ & 24.6 & Different configuration (RBC-P) -- excluded \\
+\end{longtable}
+\section{Pandey \& Sreenivasan (2025), Table 1}
+Closed 2D box, $Pr=0.1$ and $Pr=1$, wide $Ra$ range. As with the 2026
+paper, the $Ra=10^9$ rows duplicate the present paper's own simulations
+exactly (42.72 and 50.87) and are excluded.
+
+\begin{longtable}{l l l l}
+\caption{Pandey \& Sreenivasan (2025), Table 1.}\label{tab:ps2025}\\
+\toprule
+\textbf{Pr} & \textbf{Ra} & \textbf{Nu} & \textbf{Comment} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Pr} & \textbf{Ra} & \textbf{Nu} & \textbf{Comment} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\rowcolor{included} 0.1 & $10^{6}$ & 5.91 & Included \\
+\rowcolor{included} 0.1 & $2\times10^{6}$ & 7.05 & Included \\
+\rowcolor{included} 0.1 & $3\times10^{6}$ & 7.88 & Included \\
+\rowcolor{included} 0.1 & $6\times10^{6}$ & 10.04 & Included \\
+\rowcolor{included} 0.1 & $10^{7}$ & 11.77 & Included \\
+\rowcolor{included} 0.1 & $2\times10^{7}$ & 15.35 & Included \\
+\rowcolor{included} 0.1 & $3\times10^{7}$ & 17.5 & Included \\
+\rowcolor{included} 0.1 & $10^{8}$ & 23.01 & Included \\
+\rowcolor{included} 0.1 & $3\times10^{8}$ & 31.06 & Included \\
+\rowcolor{excluded} 0.1 & $10^{9}$ & 42.72 & Matches Present paper exactly -- duplicate \\
+\rowcolor{included} 0.1 & $3\times10^{9}$ & 59.15 & Included \\
+\rowcolor{included} 0.1 & $10^{10}$ & 84.74 & Included \\
+\rowcolor{included} 1 & $3\times10^{6}$ & 6.01 & Included \\
+\rowcolor{included} 1 & $6\times10^{6}$ & 7.11 & Included \\
+\rowcolor{included} 1 & $8\times10^{6}$ & 8.18 & Included \\
+\rowcolor{included} 1 & $9\times10^{6}$ & 8.64 & Included \\
+\rowcolor{included} 1 & $10^{7}$ & 9.03 & Included \\
+\rowcolor{included} 1 & $1.5\times10^{7}$ & 13.33 & Included \\
+\rowcolor{included} 1 & $2\times10^{7}$ & 14.75 & Included \\
+\rowcolor{included} 1 & $3\times10^{7}$ & 17.27 & Included \\
+\rowcolor{included} 1 & $6\times10^{7}$ & 21.48 & Included \\
+\rowcolor{included} 1 & $10^{8}$ & 25.01 & Included \\
+\rowcolor{included} 1 & $3\times10^{8}$ & 35.61 & Included \\
+\rowcolor{included} 1 & $6\times10^{8}$ & 44.15 & Included \\
+\rowcolor{excluded} 1 & $10^{9}$ & 50.87 & Matches Present paper exactly -- duplicate \\
+\rowcolor{included} 1 & $3\times10^{9}$ & 67.51 & Included \\
+\rowcolor{included} 1 & $10^{10}$ & 94.52 & Included \\
+\rowcolor{included} 1 & $3\times10^{10}$ & 130.2 & Included \\
+\rowcolor{included} 1 & $10^{11}$ & 183.3 & Included \\
+\rowcolor{included} 1 & $3\times10^{11}$ & 262.3 & Included \\
+\rowcolor{included} 1 & $10^{12}$ & 394.2 & Included \\
+\end{longtable}
+\section{Summary}
+\begin{longtable}{l r r r}
+\caption{Row counts by source.}\label{tab:summary}\\
+\toprule
+\textbf{Source} & \textbf{Rows in table} & \textbf{Included} & \textbf{Excluded} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Source} & \textbf{Rows in table} & \textbf{Included} & \textbf{Excluded} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Present paper, Table 1 & 13 & 13 & 0 \\
+Pandey (2021), Table 1 & 9 & 5 & 4 \\
+Pandey, Tiwari \& Sreenivasan (2026), Table 1 & 14 & 12 & 2 \\
+Pandey, Tiwari \& Sreenivasan (2026), Table 2 (RBC-P) & 12 & 0 & 12 \\
+Pandey \& Sreenivasan (2025), Table 1 & 31 & 29 & 2 \\
+\midrule
+\textbf{Total} & \textbf{79} & \textbf{59} & \textbf{20} \\
+\end{longtable}
+\noindent The 59 included rows across all four sources make up
+\texttt{data/nu\_dataset\_model.csv}. Once the two missing papers
+(references 5 and 6) are obtained, their tables should be added here
+following the same process: reproduce the table, confirm the physical
+setup matches (closed box, same boundary conditions) before including any
+row, and update the summary above.
+
+\end{document}
