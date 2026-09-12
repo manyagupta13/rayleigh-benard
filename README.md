@@ -95,20 +95,20 @@ hand-drawn — regenerate any of them by re-running the corresponding script.
 the expected trend (Nu grows with Ra) and shows Ra matters far more than Pr
 in this range.
 
-![EDA scatter plots](results/eda_scatter.png)
+<img src="results/eda_scatter.png" alt="EDA scatter plots" width="800">
 
 **Baseline random forest** (paper's method: 5 trees, single 70/30 split) —
 predicted vs. actual Nu on the 18 held-out points, R² = 0.971.
 `baseline_random_forest.png` is the same plot from the standalone script,
 confirming it reproduces the notebook exactly.
 
-![Baseline random forest: predicted vs actual](results/predicted_vs_actual.png)
+<img src="results/predicted_vs_actual.png" alt="Baseline random forest: predicted vs actual" width="450">
 
 **The real comparison** — mean R² ± std across 100 cross-validation splits,
 for all 7 methods (same numbers as the table above). This is the number to
 trust, not the single-split R² above.
 
-![Model comparison bar chart](results/model_comparison.png)
+<img src="results/model_comparison.png" alt="Model comparison bar chart" width="600">
 
 **Why the random forest loses** — predicted vs. actual for the random
 forest, the power-law fit, and the Gaussian process side by side (5-fold
@@ -116,4 +116,4 @@ CV). The random forest systematically underpredicts the handful of
 highest-Nu points, because trees can't extrapolate past values seen in
 training; the power-law fit and GP don't have that problem.
 
-![Top methods: predicted vs actual](results/top_methods_predicted_vs_actual.png)
+<img src="results/top_methods_predicted_vs_actual.png" alt="Top methods: predicted vs actual" width="800">
