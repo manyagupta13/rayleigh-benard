@@ -27,7 +27,8 @@ rayleigh-benard/
     ├── eda_scatter.png
     ├── predicted_vs_actual.png
     ├── baseline_random_forest.png
-    └── model_comparison.png
+    ├── model_comparison.png
+    └── top_methods_predicted_vs_actual.png
 ```
 
 ## What's in `nu_dataset_model.csv` and what isn't
@@ -61,3 +62,19 @@ stable (0.989 ± 0.052), and the random forest baseline itself drops to
 0.891 ± 0.100 once cross-validated (a single lucky split had made it look
 like 0.971). See `docs/method_comparison.md` for the full table and
 reasoning behind each suggestion.
+
+## Results
+
+All plots below are produced by the scripts/notebook in this repo, not
+hand-drawn — regenerate any of them by re-running the corresponding script.
+
+| Plot | What it shows |
+|---|---|
+| [`eda_scatter.png`](results/eda_scatter.png) | Raw data sanity check: Nu vs. Ra and Nu vs. Pr before any model touches it. Confirms the expected trend (Nu grows with Ra) and shows Ra matters far more than Pr in this range. |
+| [`predicted_vs_actual.png`](results/predicted_vs_actual.png) | `notebooks/analysis.ipynb`'s random forest, single 70/30 split: predicted vs. actual Nu on the held-out 18 points, R² = 0.971. |
+| [`baseline_random_forest.png`](results/baseline_random_forest.png) | Same plot, produced independently by `scripts/baseline_random_forest.py` — confirms the standalone script reproduces the notebook exactly. |
+| [`model_comparison.png`](results/model_comparison.png) | The real comparison: mean R² ± std across 100 cross-validation splits, for all 7 methods in `scripts/compare_models.py`. This is the number to trust, not the single-split R² above. |
+| [`top_methods_predicted_vs_actual.png`](results/top_methods_predicted_vs_actual.png) | Predicted-vs-actual for the random forest, the power-law fit, and the Gaussian process side by side (5-fold CV). Shows *why* the random forest loses: it systematically underpredicts the handful of highest-Nu points, because trees can't extrapolate past values seen in training. See `docs/method_comparison.md` for details. |
+
+The last two plots (and the reasoning behind them) live in more depth in
+`docs/method_comparison.md`.

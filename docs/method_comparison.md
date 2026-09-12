@@ -26,6 +26,27 @@ of these methods (random forest looked 8 points better than it should, degree-2
 polynomial regression looked 19 points better) — this is exactly why doing
 cross-validation before trusting a comparison matters here.
 
+## What the bar chart hides: `results/top_methods_predicted_vs_actual.png`
+
+The table above says the power-law fit and Gaussian process beat the random
+forest, but not *where* the random forest goes wrong. This plot puts all
+three side by side as predicted-vs-actual scatter plots (5-fold CV, each
+point predicted by a model that never trained on it):
+
+![Top methods: predicted vs actual](../results/top_methods_predicted_vs_actual.png)
+
+The random forest panel shows a clear, systematic pattern: the four highest-Nu
+points (Nu > 80) all fall *below* the perfect-prediction line — the model
+underpredicts every one of them. This isn't random scatter, it's a known
+limitation of trees: a random forest can only predict values it saw in
+training (it averages leaf values), so it can't extrapolate past the highest
+Nu it was trained on. With only a handful of points out at high Ra, whichever
+ones land in the test fold get underpredicted almost by construction. The
+power-law and Gaussian process panels don't show this bias — both are smooth
+functions that extrapolate naturally, so they track the high-Nu points as
+well as the low-Nu ones. This is the real reason the power-law fit and GP
+outperform the random forest here, not just a marginally better R².
+
 ## Why these three suggestions specifically
 
 **Gaussian process regression.** DNS values here carry real uncertainty (the

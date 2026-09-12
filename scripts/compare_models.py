@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.base import BaseEstimator, RegressorMixin
-from sklearn.model_selection import RepeatedKFold, cross_val_score
+from sklearn.model_selection import RepeatedKFold, KFold, cross_val_score, cross_val_predict
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 from sklearn.linear_model import LinearRegression
@@ -24,12 +24,22 @@ from sklearn.svm import SVR
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel, WhiteKernel
+from sklearn.metrics import r2_score
 
 from baseline_random_forest import load_data, RANDOM_STATE
 
 OUTPUT_PLOT = "results/model_comparison.png"
+PREDICTIONS_PLOT = "results/top_methods_predicted_vs_actual.png"
 N_SPLITS = 5
 N_REPEATS = 20  # 100 train/test splits total per method, for a stable mean +/- std
+
+# Methods to show as predicted-vs-actual scatter plots (in addition to the
+# summary bar chart) - the paper's baseline, plus the two methods that beat it.
+PLOT_METHODS = [
+    "Random forest (baseline, 5 trees)",
+    "Power-law fit (log-log linear regression)",
+    "Gaussian process regression",
+]
 
 
 class PowerLawRegressor(BaseEstimator, RegressorMixin):
@@ -81,6 +91,36 @@ def build_models():
     return models
 
 
+def plot_predictions(X, y, models):
+    """Predicted-vs-actual scatter for the methods in PLOT_METHODS.
+
+    Uses a single (non-repeated) 5-fold CV via cross_val_predict, so every
+    point shown is a prediction made by a model that never saw that point
+    during training - same spirit as the cross-validated R^2 above, just
+    visualized per-point instead of summarized as one number. This is why
+    the R^2 printed in each panel's title can differ slightly from the
+    mean R^2 in model_comparison.png (that one averages 100 splits; this
+    is a single 5-fold pass, needed because cross_val_predict requires
+    each point predicted exactly once).
+    """
+    cv_single = KFold(n_splits=N_SPLITS, shuffle=True, random_state=RANDOM_STATE)
+    fig, axes = plt.subplots(1, len(PLOT_METHODS), figsize=(5 * len(PLOT_METHODS), 4.8))
+    for ax, name in zip(axes, PLOT_METHODS):
+        model = models[name]
+        y_pred = cross_val_predict(model, X, y, cv=cv_single)
+        r2 = r2_score(y, y_pred)
+        ax.scatter(y, y_pred, edgecolor="k", alpha=0.8)
+        lims = [min(y.min(), y_pred.min()), max(y.max(), y_pred.max())]
+        ax.plot(lims, lims, "r--", label="perfect prediction")
+        ax.set_xlabel("Nu (actual)")
+        ax.set_ylabel("Nu (predicted)")
+        ax.set_title(f"{name}\n(5-fold CV, R^2 = {r2:.3f})", fontsize=10)
+        ax.legend(fontsize=8)
+    plt.tight_layout()
+    plt.savefig(PREDICTIONS_PLOT, dpi=150)
+    print(f"Saved plot to {PREDICTIONS_PLOT}")
+
+
 def main():
     X, y = load_data()
     models = build_models()
@@ -121,6 +161,8 @@ def main():
     plt.tight_layout()
     plt.savefig(OUTPUT_PLOT, dpi=150)
     print(f"\nSaved plot to {OUTPUT_PLOT}")
+
+    plot_predictions(X, y, models)
 
 
 if __name__ == "__main__":
