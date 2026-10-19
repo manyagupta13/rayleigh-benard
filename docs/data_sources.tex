@@ -39,6 +39,7 @@
 \date{\today}
 
 \begin{document}
+\sloppy
 \maketitle
 
 \section*{Overview}
@@ -48,9 +49,14 @@ Pandey's paper (\emph{Turbulent Prandtl number in the near-wall region of
 thermal convection}) trains a random forest regressor to predict the Nusselt
 number $Nu$ from the Prandtl number $Pr$ and Rayleigh number $Ra$, using 55
 data points drawn from five cited papers plus the paper's own simulations.
-This document reproduces the relevant tables from the four sources we have
-obtained so far, highlights which rows were kept, and comments on why the
-rest were left out.
+This document reproduces the relevant tables from every source used,
+highlights which rows were kept, and comments on why the rest were left
+out. The dataset was later extended beyond the paper's five citations with
+four more papers that simulate the identical configuration
+(Sections~\ref{sec:zzs2017}--\ref{sec:vdp2012}), bringing it from 59 to
+194 rows. Two of those sources report $Nu$ only in figures; their values
+were read from the vector graphics inside the PDFs
+(Section~\ref{sec:extraction}).
 
 \legend
 
@@ -73,24 +79,53 @@ convection in 1, 2, 3, and 4 dimensions.} J.\ Fluid Mech., in press, 2026.
 \emph{Comparison between two- and three-dimensional Rayleigh-B\'enard
 convection.} J.\ Fluid Mech., 736:177--194, 2013.
 \href{https://doi.org/10.1017/jfm.2013.488}{doi:10.1017/jfm.2013.488}.
-\textbf{\color{excluded!60!black}Not yet obtained} --- reports $Nu$ only as
-scatter plots (Fig.~5a, 6b), not a table; paywalled, needs institutional
-access to digitize.
+\textbf{Obtained.} The 2D $Nu$ values at $Ra=10^8$ are tabulated in its
+Appendix Table~2 (not only plotted, as first assumed).
 \item Y.\ Zhang and Q.\ Zhou. \emph{Low-Prandtl-number effects on
 global and local statistics in two-dimensional Rayleigh-B\'enard
 convection.} Phys.\ Fluids, 36(1):015107, 2024.
 \href{https://doi.org/10.1063/5.0175011}{doi:10.1063/5.0175011}.
-\textbf{\color{excluded!60!black}Not yet obtained} --- fully paywalled, no
-open copy found; needs institutional access.
+\textbf{Obtained} (institutional access).
+\item Y.\ Zhang, Q.\ Zhou, and C.\ Sun. \emph{Statistics of kinetic and
+thermal energy dissipation rates in two-dimensional turbulent
+Rayleigh-B\'enard convection.} J.\ Fluid Mech., 814:165--184, 2017.
+\href{https://doi.org/10.1017/jfm.2017.19}{doi:10.1017/jfm.2017.19}.
+\item A.\ Xu, L.\ Shi, and H.-D.\ Xi. \emph{Statistics of temperature
+and thermal energy dissipation rate in low-Prandtl number turbulent
+thermal convection.} Phys.\ Fluids, 31:125101, 2019.
+\href{https://doi.org/10.1063/1.5129818}{doi:10.1063/1.5129818} ---
+\href{https://arxiv.org/abs/1911.04042}{arXiv:1911.04042}.
+\item J.-C.\ He, M.-W.\ Fang, Z.-Y.\ Gao, S.-D.\ Huang, and Y.\ Bao.
+\emph{Effects of Prandtl number in two-dimensional turbulent convection.}
+Chin.\ Phys.\ B, 30(9):094701, 2021.
+\href{https://doi.org/10.1088/1674-1056/ac0781}{doi:10.1088/1674-1056/ac0781}.
+\item E.\,P.\ van der Poel, R.\,J.\,A.\,M.\ Stevens, K.\ Sugiyama, and
+D.\ Lohse. \emph{Flow states in two-dimensional Rayleigh-B\'enard
+convection as a function of aspect-ratio and Rayleigh number.} Phys.\
+Fluids, 24:085104, 2012.
+\href{https://doi.org/10.1063/1.4744988}{doi:10.1063/1.4744988} ---
+\href{https://arxiv.org/abs/1206.3823}{arXiv:1206.3823}.
+\item J.-L.\ Yang, Y.-Z.\ Zhang, T.-C.\ Jin, Y.-H.\ Dong, B.-F.\ Wang,
+and Q.\ Zhou. \emph{The $Pr$-dependence of the critical roughness height
+in two-dimensional turbulent Rayleigh-B\'enard convection.} J.\ Fluid
+Mech., 911:A52, 2021.
+\href{https://doi.org/10.1017/jfm.2020.1091}{doi:10.1017/jfm.2020.1091}.
+\textbf{Checked, not used} (Sec.~\ref{sec:yang}).
 \end{enumerate}
 
-\noindent All four obtained sources describe the \emph{same} physical
-setup: a closed 2D square box ($\Gamma=1$), no-slip walls, isothermal
-top/bottom plates, adiabatic sidewalls, solved with the same spectral-element
-code. This is confirmed empirically, not just from the papers' text: several
-rows below report the exact same $Nu$ to the decimal at the same $Pr, Ra$ in
-two different papers --- only possible if it is literally the same
-simulation, reused across papers.
+\noindent Every included row describes the \emph{same} physical setup:
+a closed 2D square box ($\Gamma=1$), no-slip velocity on all four walls,
+isothermal top/bottom plates and adiabatic sidewalls. References 1--4 share
+one spectral-element code: several of their rows report the exact same $Nu$
+to the decimal at the same $Pr, Ra$, which is only possible if it is the
+same simulation reused across papers. References 5--10 use four other codes
+(finite-difference and lattice-Boltzmann). Where independent codes simulate
+the same $(Pr, Ra)$ their $Nu$ agree to a median of 1.5\%
+(Section~\ref{sec:agreement}), which is the evidence that the pooled data
+are homogeneous. Grid resolution differs between sources and does not need
+to match: what matters is that each run is converged, which every source
+checks (grid spacing versus Kolmogorov/Batchelor scale, points inside the
+thermal boundary layer, agreement of independent $Nu$ definitions).
 
 \section{Present paper --- Shreshthi \& Pandey, Table 1}
 Closed 2D box, $Ra=10^9$ fixed, $Pr$ varied. All 13 rows are the paper's own
@@ -114,7 +149,7 @@ flagship simulations and are included.
 \rowcolor{included} 0.2 & $10^{9}$ & 45.98 & Included \\
 \rowcolor{included} 0.35 & $10^{9}$ & 48.1 & Included \\
 \rowcolor{included} 0.5 & $10^{9}$ & 48.64 & Included \\
-\rowcolor{included} 0.7 & $10^{9}$ & 49.22 & Included \\
+\rowcolor{included} 0.7 & $10^{9}$ & 49.22 & Included -- \textbf{flag: multistable} (Sec.~\ref{sec:flags}) \\
 \rowcolor{included} 1 & $10^{9}$ & 50.87 & Included \\
 \rowcolor{included} 2 & $10^{9}$ & 51.09 & Included \\
 \rowcolor{included} 4.38 & $10^{9}$ & 52.67 & Included \\
@@ -269,15 +304,414 @@ exactly (42.72 and 50.87) and are excluded.
 \rowcolor{included} 1 & $3\times10^{11}$ & 262.3 & Included \\
 \rowcolor{included} 1 & $10^{12}$ & 394.2 & Included \\
 \end{longtable}
-\section{Summary}
-\begin{longtable}{l r r r}
-\caption{Row counts by source.}\label{tab:summary}\\
+\section{van der Poel, Stevens \& Lohse (2013), Appendix Table 2}\label{sec:vdp2013}
+2D, $\Gamma=1$, no-slip on all walls, $Ra=10^8$, $Pr$ varied
+(2D code of Sugiyama et al.\ 2009). The text does not restate the sidewall
+thermal condition, but van der Poel et al.\ (2012), using the same code,
+state adiabatic sidewalls explicitly (Section~\ref{sec:vdp2012}), and the $Pr=1$ value (25.17) matches Pandey \& Sreenivasan (2025)
+(25.01) to 0.6\%. Rows in bold in the original are resolution checks: as in
+Section~2, only one run per physical point is kept, here the finest grid.
+The value used is $Nu_f$ (whole run); $Nu_h$ (last half) indicates time
+convergence. Not used: the 3D table (Table~1), Fig.~5(b) ($\Gamma=0.5$) and
+the $Ra=10^6$ series in Fig.~6(b) (partly double-roll states).
+
+\begin{longtable}{l l r r r r r r p{4.4cm}}
+\caption{van der Poel et al.\ (2013), Table 2 (2D, $Ra=10^8$).}\label{tab:vdp2013}\\
 \toprule
-\textbf{Source} & \textbf{Rows in table} & \textbf{Included} & \textbf{Excluded} \\
+\textbf{Pr} & \textbf{Grid} & $N_{BL}$ & $N_{BL}^{min}$ & $h$ & $Nu_f$ & $Nu_h$ & $\tau_f$ & \textbf{Comment} \\
 \midrule
 \endfirsthead
 \toprule
-\textbf{Source} & \textbf{Rows in table} & \textbf{Included} & \textbf{Excluded} \\
+\textbf{Pr} & \textbf{Grid} & $N_{BL}$ & $N_{BL}^{min}$ & $h$ & $Nu_f$ & $Nu_h$ & $\tau_f$ & \textbf{Comment} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\rowcolor{included} 55 & 512$\times$256 & 16 & 7 & 1.27 & 27.83 & 27.86 & 50000 & Included \\
+\rowcolor{excluded} 55 & 256$\times$128 & 8 & 7 & 2.38 & 27.76 & 27.75 & 50000 & Coarser-grid resolution check -- excluded \\
+\rowcolor{included} 30 & 256$\times$128 & 8 & 7 & 2.38 & 27.50 & 27.51 & 40000 & Included \\
+\rowcolor{included} 20 & 256$\times$128 & 8 & 7 & 2.38 & 27.44 & 27.44 & 30000 & Included \\
+\rowcolor{included} 10 & 256$\times$128 & 8 & 7 & 2.37 & 27.25 & 27.26 & 20000 & Included \\
+\rowcolor{included} 6.4 & 512$\times$256 & 16 & 7 & 1.26 & 26.99 & 26.99 & 10000 & Included \\
+\rowcolor{excluded} 6.4 & 256$\times$128 & 8 & 7 & 2.36 & 26.79 & 26.79 & 20000 & Coarser-grid resolution check -- excluded \\
+\rowcolor{included} 4.38 & 256$\times$128 & 8 & 7 & 2.33 & 25.51 & 25.47 & 30000 & Included \\
+\rowcolor{included} 3 & 256$\times$128 & 8 & 7 & 2.32 & 25.07 & 25.05 & 10000 & Included \\
+\rowcolor{included} 1.5 & 256$\times$128 & 8 & 7 & 2.31 & 24.83 & 24.82 & 10000 & Included \\
+\rowcolor{included} 1 & 512$\times$256 & 8 & 7 & 2.32 & 25.17 & 25.16 & 10000 & Included (NBL/h cells look copied from the row above) \\
+\rowcolor{included} 0.7 & 1024$\times$512 & 30 & 8 & 0.78 & 25.22 & 25.10 & 8000 & Included \\
+\rowcolor{excluded} 0.7 & 512$\times$256 & 15 & 8 & 1.48 & 25.14 & 25.16 & 8000 & Coarser-grid resolution check -- excluded \\
+\rowcolor{included} 0.45 & 1024$\times$512 & 34 & 11 & 0.96 & 24.78 & 24.59 & 2000 & Included \\
+\rowcolor{included} 0.3 & 1024$\times$512 & 37 & 13 & 1.18 & 25.25 & 25.09 & 2000 & Included \\
+\rowcolor{included} 0.2 & 1024$\times$512 & 34 & 17 & 1.43 & 25.73 & 25.40 & 1500 & Included \\
+\rowcolor{included} 0.1 & 2048$\times$1024 & 76 & 26 & 1.01 & 23.63 & 23.18 & 200 & Included \\
+\rowcolor{excluded} 0.1 & 1024$\times$512 & 36 & 26 & 1.97 & 23.32 & 23.03 & 1000 & Coarser-grid resolution check -- excluded \\
+\rowcolor{included} 0.065 & 2048$\times$1024 & 82 & 34 & 1.23 & 21.76 & 22.07 & 200 & Included -- short average (200\,$t_f$) \\
+\rowcolor{included} 0.045 & 2048$\times$1024 & 102 & 43 & 1.46 & 20.52 & 20.95 & 80 & Included -- short average (80\,$t_f$) \\
+\end{longtable}
+
+\section{Zhang \& Zhou (2024), Tables I and II}\label{sec:zz2024}
+2D square box, no-slip on all four walls, isothermal plates, insulated
+sidewalls --- identical configuration. Compact fourth-order finite
+differences. Every run has $\Delta_g/\eta<1$ and meets the Shishkina et al.\
+boundary-layer criterion, and the three independent $Nu$ estimates agree
+within 3\%. All 15 rows are included. This source extends the $Pr$ range
+down to 0.005 (previous minimum 0.021).
+
+\begin{longtable}{l l l r r r r r r p{3.3cm}}
+\caption{Zhang \& Zhou (2024), Tables I--II.}\label{tab:zz2024}\\
+\toprule
+\textbf{Pr} & \textbf{Ra} & \textbf{Grid} & $\Delta_g/\eta$ & $N_{BL}$ & $t_{avg}$ & $Nu$ & $Nu_{\varepsilon_u}$ & $Nu_{\varepsilon_\theta}$ & \textbf{Comment} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Pr} & \textbf{Ra} & \textbf{Grid} & $\Delta_g/\eta$ & $N_{BL}$ & $t_{avg}$ & $Nu$ & $Nu_{\varepsilon_u}$ & $Nu_{\varepsilon_\theta}$ & \textbf{Comment} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\rowcolor{included} 0.005 & $10^{7}$ & 1537$\times$1537 & 0.87 & 86 & 105 & 8.91 & 8.65 & 8.91 & Included -- short average (105\,$t_f$) \\
+\rowcolor{included} 0.007 & $10^{7}$ & 1537$\times$1537 & 0.74 & 83 & 130 & 9.25 & 9.01 & 9.25 & Included -- short average (130\,$t_f$) \\
+\rowcolor{included} 0.01 & $10^{7}$ & 1025$\times$1025 & 0.95 & 52 & 325 & 9.89 & 9.69 & 9.89 & Included \\
+\rowcolor{included} 0.015 & $10^{7}$ & 1025$\times$1025 & 0.79 & 49 & 387 & 10.49 & 10.45 & 10.49 & Included \\
+\rowcolor{included} 0.023 & $10^{7}$ & 769$\times$769 & 0.86 & 35 & 684 & 11.07 & 11.10 & 11.09 & Included \\
+\rowcolor{included} 0.035 & $10^{7}$ & 769$\times$769 & 0.71 & 32 & 1035 & 11.86 & 11.87 & 11.86 & Included \\
+\rowcolor{included} 0.05 & $10^{7}$ & 513$\times$513 & 0.90 & 21 & 2400 & 12.32 & 12.32 & 12.34 & Included \\
+\rowcolor{included} 0.07 & $10^{7}$ & 513$\times$513 & 0.77 & 20 & 3600 & 12.96 & 12.99 & 12.98 & Included \\
+\rowcolor{included} 0.01 & $10^{8}$ & 2049$\times$2049 & 0.98 & 57 & 140 & 18.06 & 17.53 & 18.11 & Included -- \textbf{flag: conflict} (Sec.~\ref{sec:flags}) \\
+\rowcolor{included} 0.023 & $10^{8}$ & 1537$\times$1537 & 0.88 & 38 & 360 & 20.07 & 19.61 & 20.01 & Included \\
+\rowcolor{included} 0.035 & $10^{8}$ & 1537$\times$1537 & 0.73 & 37 & 416 & 20.78 & 20.82 & 20.81 & Included \\
+\rowcolor{included} 0.05 & $10^{8}$ & 1025$\times$1025 & 0.93 & 24 & 1000 & 21.71 & 21.56 & 21.78 & Included \\
+\rowcolor{included} 0.07 & $10^{8}$ & 1025$\times$1025 & 0.79 & 23 & 800 & 22.32 & 22.20 & 22.33 & Included \\
+\rowcolor{included} 0.1 & $10^{8}$ & 769$\times$769 & 0.89 & 17 & 2400 & 23.21 & 23.19 & 23.19 & Included \\
+\rowcolor{included} 0.15 & $10^{8}$ & 769$\times$769 & 0.74 & 16 & 2000 & 24.18 & 24.22 & 24.27 & Included \\
+\end{longtable}
+
+\section{Zhang, Zhou \& Sun (2017), Table 1}\label{sec:zzs2017}
+2D box of unit aspect ratio, adiabatic sidewalls, no-slip on all surfaces;
+same compact fourth-order code as Zhang \& Zhou (2024). Columns 5--6 compare
+the measured dissipation rates with the exact relations (1 = perfect);
+nearly all are within 1\%. All 18 rows are included.
+
+\begin{longtable}{l l l r r r r p{5.2cm}}
+\caption{Zhang, Zhou \& Sun (2017), Table 1.}\label{tab:zzs2017}\\
+\toprule
+\textbf{Pr} & \textbf{Ra} & \textbf{Grid} & $Nu$ & $\varepsilon_u$ ratio & $\varepsilon_\theta$ ratio & $N_{BL}$ & \textbf{Comment} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Pr} & \textbf{Ra} & \textbf{Grid} & $Nu$ & $\varepsilon_u$ ratio & $\varepsilon_\theta$ ratio & $N_{BL}$ & \textbf{Comment} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\rowcolor{included} 0.7 & $10^{6}$ & 129$\times$129 & 6.3 & 1.0041 & 1.0023 & 11 & Included \\
+\rowcolor{included} 0.7 & $3\times10^{6}$ & 193$\times$193 & 7.64 & 1.0038 & 1.0018 & 13 & Included \\
+\rowcolor{included} 0.7 & $10^{7}$ & 257$\times$257 & 11.37 & 1.0031 & 1.0014 & 12 & Included \\
+\rowcolor{included} 0.7 & $3\times10^{7}$ & 385$\times$385 & 16.5 & 1.0025 & 1.0006 & 12 & Included \\
+\rowcolor{included} 0.7 & $10^{8}$ & 513$\times$513 & 25.25 & 1.0021 & 0.9998 & 11 & Included \\
+\rowcolor{included} 0.7 & $3\times10^{8}$ & 769$\times$769 & 35.73 & 1.0017 & 1.0006 & 11 & Included \\
+\rowcolor{included} 0.7 & $10^{9}$ & 1025$\times$1025 & 53.51 & 0.9967 & 0.9996 & 10 & Included -- \textbf{flag: multistable} (Sec.~\ref{sec:flags}) \\
+\rowcolor{included} 0.7 & $3\times10^{9}$ & 1537$\times$1537 & 66.95 & 0.9896 & 1.0013 & 12 & Included \\
+\rowcolor{included} 0.7 & $10^{10}$ & 2049$\times$2049 & 93.88 & 1.0358 & 0.9996 & 12 & Included -- $\varepsilon_u$ check off by 3.6\% \\
+\rowcolor{included} 5.3 & $10^{6}$ & 129$\times$129 & 6.87 & 1.0026 & 1.0019 & 10 & Included \\
+\rowcolor{included} 5.3 & $3\times10^{6}$ & 193$\times$193 & 9.33 & 1.0022 & 1.0009 & 11 & Included \\
+\rowcolor{included} 5.3 & $10^{7}$ & 257$\times$257 & 13.28 & 1.0017 & 1.0008 & 10 & Included \\
+\rowcolor{included} 5.3 & $3\times10^{7}$ & 385$\times$385 & 18.86 & 1.0010 & 1.0009 & 11 & Included \\
+\rowcolor{included} 5.3 & $10^{8}$ & 513$\times$513 & 26.21 & 1.0000 & 1.0002 & 10 & Included \\
+\rowcolor{included} 5.3 & $3\times10^{8}$ & 769$\times$769 & 35.96 & 1.0016 & 1.0001 & 11 & Included \\
+\rowcolor{included} 5.3 & $10^{9}$ & 1025$\times$1025 & 51.28 & 1.0030 & 1.0005 & 11 & Included \\
+\rowcolor{included} 5.3 & $3\times10^{9}$ & 1537$\times$1537 & 71.57 & 0.9996 & 1.0019 & 11 & Included \\
+\rowcolor{included} 5.3 & $10^{10}$ & 3073$\times$3073 & 103 & 0.9963 & 1.0003 & 15 & Included \\
+\end{longtable}
+
+\section{Xu, Shi \& Xi (2019), Tables I and II}\label{sec:xu2019}
+2D square cell ($L=H$), no-slip on all four walls, adiabatic vertical walls,
+isothermal plates; lattice-Boltzmann (D2Q9/D2Q5). $\max(\Delta_g/\eta,
+\Delta_g/\eta_B)\le0.45$ and the three $Nu$ definitions agree to about 1\%.
+The volume-averaged $Nu_{vol}$ is used. All 8 rows are included. At
+$Ra=10^6$ it gives 6.28, against 6.3 from Pandey (2021) at the nearby
+$Pr=0.021$.
+
+\begin{longtable}{l l l r r r r r l}
+\caption{Xu, Shi \& Xi (2019), Tables I--II.}\label{tab:xu2019}\\
+\toprule
+\textbf{Pr} & \textbf{Ra} & \textbf{Grid} & $\Delta_g/\eta$ & $t_{avg}$ & $Nu_{vol}$ & $Nu_{wall}$ & $Nu_{th}$ & \textbf{Comment} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Pr} & \textbf{Ra} & \textbf{Grid} & $\Delta_g/\eta$ & $t_{avg}$ & $Nu_{vol}$ & $Nu_{wall}$ & $Nu_{th}$ & \textbf{Comment} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\rowcolor{included} 0.025 & $10^{6}$ & 769$\times$769 & 0.39 & 700 & 6.28 & 6.25 & 6.35 & Included \\
+\rowcolor{included} 0.025 & $1.3\times10^{6}$ & 851$\times$851 & 0.39 & 2300 & 6.92 & 6.97 & 7.01 & Included \\
+\rowcolor{included} 0.025 & $1.6\times10^{6}$ & 901$\times$901 & 0.40 & 1400 & 7.37 & 7.36 & 7.32 & Included \\
+\rowcolor{included} 0.025 & $2\times10^{6}$ & 1001$\times$1001 & 0.38 & 1000 & 7.72 & 7.74 & 7.73 & Included \\
+\rowcolor{included} 0.025 & $3\times10^{6}$ & 1025$\times$1025 & 0.43 & 1400 & 8.54 & 8.57 & 8.57 & Included \\
+\rowcolor{included} 0.025 & $4\times10^{6}$ & 1101$\times$1101 & 0.43 & 1000 & 9.08 & 9.13 & 9.14 & Included \\
+\rowcolor{included} 0.025 & $6\times10^{6}$ & 1201$\times$1201 & 0.45 & 1300 & 9.93 & 9.99 & 10.00 & Included \\
+\rowcolor{included} 0.025 & $10^{7}$ & 1537$\times$1537 & 0.42 & 1000 & 11.38 & 11.39 & 11.42 & Included \\
+\end{longtable}
+
+\section{He, Fang, Gao, Huang \& Bao (2021), Fig.~5(a)}\label{sec:he2021}
+2D square box ($\Gamma=1$), no-slip velocity on all walls, isothermal
+plates, adiabatic sidewalls; second-order finite differences, meshes set by
+the Gao et al.\ criteria, $Nu$ from different methods within 1\%, averaged
+over 200--500 free-fall times. Ten $Pr$ values from 0.25 to 100, $Ra$ from
+$10^7$ to $10^{10}$ (low $Pr$ is not run at the highest $Ra$). Periods of
+large-scale-flow reversal are left out of their $Nu$ averages; the authors
+report this changes $Nu$ by at most 3\%.
+
+$Nu$ is not tabulated. The values below were extracted from the vector
+markers of Fig.~5(a) ($Nu/Ra^{0.3}$ on a linear axis), as described in
+Section~\ref{sec:extraction}; estimated error below 0.2\%. All 62 points are
+included.
+
+\begin{longtable}{l l r r l}
+\caption{He et al.\ (2021), values extracted from Fig.~5(a).}\label{tab:he2021}\\
+\toprule
+\textbf{Pr} & \textbf{Ra} & $Nu/Ra^{0.3}$ & $Nu$ & \textbf{Comment} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Pr} & \textbf{Ra} & $Nu/Ra^{0.3}$ & $Nu$ & \textbf{Comment} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\rowcolor{included} 0.25 & $10^{7}$ & 0.0885 & 11.14 & Included \\
+\rowcolor{included} 0.25 & $2\times10^{7}$ & 0.0960 & 14.87 & Included \\
+\rowcolor{included} 0.25 & $5\times10^{7}$ & 0.1000 & 20.40 & Included \\
+\rowcolor{included} 0.25 & $10^{8}$ & 0.1012 & 25.41 & Included \\
+\rowcolor{included} 0.4 & $10^{7}$ & 0.0915 & 11.51 & Included \\
+\rowcolor{included} 0.4 & $2\times10^{7}$ & 0.0931 & 14.43 & Included \\
+\rowcolor{included} 0.4 & $5\times10^{7}$ & 0.0990 & 20.19 & Included -- two overplotted markers averaged \\
+\rowcolor{included} 0.4 & $10^{8}$ & 0.0977 & 24.55 & Included -- two overplotted markers averaged \\
+\rowcolor{included} 0.4 & $2\times10^{8}$ & 0.1028 & 31.78 & Included \\
+\rowcolor{included} 0.7 & $10^{7}$ & 0.0906 & 11.40 & Included \\
+\rowcolor{included} 0.7 & $2\times10^{7}$ & 0.0926 & 14.35 & Included \\
+\rowcolor{included} 0.7 & $5\times10^{7}$ & 0.0967 & 19.74 & Included \\
+\rowcolor{included} 0.7 & $10^{8}$ & 0.1006 & 25.26 & Included \\
+\rowcolor{included} 0.7 & $2\times10^{8}$ & 0.1012 & 31.29 & Included \\
+\rowcolor{included} 0.7 & $5\times10^{8}$ & 0.1037 & 42.20 & Included \\
+\rowcolor{included} 1.2 & $2\times10^{7}$ & 0.0962 & 14.90 & Included \\
+\rowcolor{included} 1.2 & $5\times10^{7}$ & 0.1011 & 20.64 & Included \\
+\rowcolor{included} 1.2 & $10^{8}$ & 0.1003 & 25.19 & Included \\
+\rowcolor{included} 1.2 & $2\times10^{8}$ & 0.1013 & 31.33 & Included \\
+\rowcolor{included} 1.2 & $5\times10^{8}$ & 0.1017 & 41.38 & Included \\
+\rowcolor{included} 1.2 & $10^{9}$ & 0.1024 & 51.33 & Included \\
+\rowcolor{included} 2 & $10^{7}$ & 0.0956 & 12.03 & Included \\
+\rowcolor{included} 2 & $2\times10^{7}$ & 0.0978 & 15.15 & Included \\
+\rowcolor{included} 2 & $5\times10^{7}$ & 0.1003 & 20.46 & Included \\
+\rowcolor{included} 2 & $10^{8}$ & 0.0997 & 25.04 & Included \\
+\rowcolor{included} 2 & $2\times10^{8}$ & 0.1002 & 30.99 & Included \\
+\rowcolor{included} 2 & $5\times10^{8}$ & 0.1003 & 40.85 & Included \\
+\rowcolor{included} 2 & $10^{9}$ & 0.0999 & 50.07 & Included \\
+\rowcolor{included} 2 & $2\times10^{9}$ & 0.1020 & 62.92 & Included \\
+\rowcolor{included} 4.3 & $10^{7}$ & 0.1035 & 13.03 & Included \\
+\rowcolor{included} 4.3 & $2\times10^{7}$ & 0.1059 & 16.42 & Included \\
+\rowcolor{included} 4.3 & $5\times10^{7}$ & 0.1047 & 21.36 & Included \\
+\rowcolor{included} 4.3 & $10^{8}$ & 0.1034 & 25.96 & Included \\
+\rowcolor{included} 4.3 & $2\times10^{8}$ & 0.1022 & 31.60 & Included \\
+\rowcolor{included} 4.3 & $5\times10^{8}$ & 0.1018 & 41.44 & Included \\
+\rowcolor{included} 4.3 & $10^{9}$ & 0.1014 & 50.82 & Included \\
+\rowcolor{included} 4.3 & $2\times10^{9}$ & 0.1024 & 63.16 & Included \\
+\rowcolor{included} 4.3 & $5\times10^{9}$ & 0.1037 & 84.19 & Included \\
+\rowcolor{included} 10 & $2\times10^{8}$ & 0.1083 & 33.51 & Included \\
+\rowcolor{included} 10 & $5\times10^{8}$ & 0.1065 & 43.35 & Included \\
+\rowcolor{included} 10 & $10^{9}$ & 0.1053 & 52.76 & Included \\
+\rowcolor{included} 10 & $2\times10^{9}$ & 0.1051 & 64.83 & Included \\
+\rowcolor{included} 10 & $5\times10^{9}$ & 0.1045 & 84.89 & Included \\
+\rowcolor{included} 10 & $10^{10}$ & 0.1051 & 105.14 & Included \\
+\rowcolor{included} 20 & $2\times10^{8}$ & 0.1097 & 33.93 & Included \\
+\rowcolor{included} 20 & $5\times10^{8}$ & 0.1085 & 44.15 & Included \\
+\rowcolor{included} 20 & $10^{9}$ & 0.1072 & 53.71 & Included \\
+\rowcolor{included} 20 & $2\times10^{9}$ & 0.1065 & 65.72 & Included \\
+\rowcolor{included} 20 & $5\times10^{9}$ & 0.1058 & 85.95 & Included \\
+\rowcolor{included} 20 & $10^{10}$ & 0.1059 & 105.85 & Included \\
+\rowcolor{included} 50 & $2\times10^{8}$ & 0.1098 & 33.97 & Included \\
+\rowcolor{included} 50 & $5\times10^{8}$ & 0.1081 & 44.00 & Included \\
+\rowcolor{included} 50 & $10^{9}$ & 0.1068 & 53.54 & Included \\
+\rowcolor{included} 50 & $2\times10^{9}$ & 0.1065 & 65.72 & Included \\
+\rowcolor{included} 50 & $5\times10^{9}$ & 0.1057 & 85.88 & Included \\
+\rowcolor{included} 50 & $10^{10}$ & 0.1061 & 106.08 & Included \\
+\rowcolor{included} 100 & $2\times10^{8}$ & 0.1112 & 34.38 & Included \\
+\rowcolor{included} 100 & $5\times10^{8}$ & 0.1104 & 44.94 & Included \\
+\rowcolor{included} 100 & $10^{9}$ & 0.1085 & 54.40 & Included \\
+\rowcolor{included} 100 & $2\times10^{9}$ & 0.1071 & 66.07 & Included \\
+\rowcolor{included} 100 & $5\times10^{9}$ & 0.1060 & 86.07 & Included \\
+\rowcolor{included} 100 & $10^{10}$ & 0.1053 & 105.34 & Included \\
+\end{longtable}
+
+\section{van der Poel, Stevens, Sugiyama \& Lohse (2012), Fig.~1(a)}\label{sec:vdp2012}
+2D, no-slip on all walls, isothermal plates, adiabatic sidewalls, same
+fourth-order finite-difference code as Section~\ref{sec:vdp2013}. Only the
+$\Gamma=1$ series (purple pentagrams, $Pr=1$) is used; the other aspect
+ratios are a different configuration. $Nu$ is not tabulated; values were
+extracted from the vector markers (Section~\ref{sec:extraction}). The
+$Ra=10^8$ point is the same simulation as van der Poel (2013) and is
+excluded.
+
+\begin{longtable}{l l r p{9cm}}
+\caption{van der Poel et al.\ (2012), $\Gamma=1$ values extracted from Fig.~1(a).}\label{tab:vdp2012}\\
+\toprule
+\textbf{Pr} & \textbf{Ra} & $Nu$ & \textbf{Comment} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Pr} & \textbf{Ra} & $Nu$ & \textbf{Comment} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\rowcolor{included} 1 & $10^{7}$ & 8.47 & Included -- \textbf{flag: flow-state} (Sec.~\ref{sec:flags}) \\
+\rowcolor{included} 1 & $2\times10^{7}$ & 13.76 & Included -- \textbf{flag: flow-state} (Sec.~\ref{sec:flags}) \\
+\rowcolor{included} 1 & $4\times10^{7}$ & 18.58 & Included \\
+\rowcolor{included} 1 & $7\times10^{7}$ & 22.44 & Included \\
+\rowcolor{excluded} 1 & $10^{8}$ & 25.14 & Same run as van der Poel (2013) Table 2 (25.17) -- duplicate \\
+\rowcolor{included} 1 & $2\times10^{8}$ & 31.52 & Included \\
+\rowcolor{included} 1 & $3\times10^{8}$ & 35.83 & Included \\
+\rowcolor{included} 1 & $4\times10^{8}$ & 38.94 & Included \\
+\rowcolor{included} 1 & $6\times10^{8}$ & 43.96 & Included \\
+\rowcolor{included} 1 & $8\times10^{8}$ & 47.85 & Included \\
+\rowcolor{included} 1 & $10^{9}$ & 51.87 & Included \\
+\rowcolor{included} 1 & $2\times10^{9}$ & 61.37 & Included \\
+\rowcolor{included} 1 & $3\times10^{9}$ & 68.46 & Included \\
+\rowcolor{included} 1 & $4\times10^{9}$ & 73.15 & Included \\
+\rowcolor{included} 1 & $6\times10^{9}$ & 82.96 & Included \\
+\rowcolor{included} 1 & $8\times10^{9}$ & 89.60 & Included \\
+\rowcolor{included} 1 & $10^{10}$ & 96.97 & Included \\
+\end{longtable}
+
+\section{Yang et al.\ (2021): checked, not used}\label{sec:yang}
+Same configuration (2D square box, no-slip, insulated sidewalls), but the
+paper studies rough plates. Its smooth-cell reference values appear only in
+Fig.~2(a), a low-resolution raster image (about 200 pixels wide) at
+$Ra=10^8$, which is already the best-covered Rayleigh number in the
+dataset, so digitizing it would add error without adding coverage. The text
+gives one smooth-cell value, $Nu=50.85$ at $Pr=1$, $Ra=10^9$, which agrees
+with the present paper (50.87) and is not added. The figure is still useful
+as a check: at $Pr=0.01$, $Ra=10^8$ it reads $Nu\approx16.3$, about 10\%
+below Zhang \& Zhou (2024), which is why that row is flagged.
+
+\section{Cross-source agreement}\label{sec:agreement}
+Points simulated by more than one source (same $Pr$ and $Ra$). Spread is
+$(\max-\min)/\mathrm{mean}$. The median spread is 1.5\%.
+Pairs within one code family (e.g.\ Pandey 2021 vs.\ Pandey, Tiwari \&
+Sreenivasan 2026) and pairs across independent codes agree equally well,
+except at the flagged points (red), which are explained in
+Section~\ref{sec:flags}. Abbreviations: Present = Shreshthi \& Pandey;
+P21, PTS26, PS25 = refs.\ 2--4; vdP13, ZZ24, ZZS17, XSX19, He21, vdP12 =
+refs.\ 5--10.
+
+\begin{longtable}{l l p{9.5cm} r}
+\caption{Points reported by more than one source.}\label{tab:agreement}\\
+\toprule
+\textbf{Pr} & \textbf{Ra} & \textbf{Values} & \textbf{Spread (\%)} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Pr} & \textbf{Ra} & \textbf{Values} & \textbf{Spread (\%)} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\rowcolor{included} 0.7 & $10^{8}$ & vdP13 25.22; ZZS17 25.25; He21 25.26 & 0.16 \\
+\rowcolor{included} 0.7 & $10^{7}$ & ZZS17 11.37; He21 11.4 & 0.26 \\
+\rowcolor{included} 0.05 & $10^{8}$ & PTS26 21.64; ZZ24 21.71 & 0.32 \\
+\rowcolor{included} 0.021 & $10^{8}$ & P21 19.6; PTS26 19.68 & 0.41 \\
+\rowcolor{included} 1 & $6\times10^{8}$ & PS25 44.15; vdP12 43.96 & 0.43 \\
+\rowcolor{included} 20 & $10^{9}$ & Present 53.41; He21 53.71 & 0.56 \\
+\rowcolor{included} 1 & $3\times10^{8}$ & PS25 35.61; vdP12 35.83 & 0.62 \\
+\rowcolor{included} 1 & $10^{8}$ & PS25 25.01; vdP13 25.17 & 0.64 \\
+\rowcolor{included} 0.05 & $10^{7}$ & PTS26 12.41; ZZ24 12.32 & 0.73 \\
+\rowcolor{included} 1 & $3\times10^{9}$ & PS25 67.51; vdP12 68.46 & 1.40 \\
+\rowcolor{included} 0.021 & $10^{7}$ & P21 10.8; PTS26 10.97 & 1.56 \\
+\rowcolor{included} 1 & $10^{9}$ & Present 50.87; vdP12 51.87 & 1.95 \\
+\rowcolor{included} 2 & $10^{9}$ & Present 51.09; He21 50.07 & 2.02 \\
+\rowcolor{included} 1 & $10^{10}$ & PS25 94.52; vdP12 96.97 & 2.56 \\
+\rowcolor{included} 0.1 & $10^{8}$ & PS25 23.01; ZZ24 23.21; vdP13 23.63 & 2.66 \\
+\rowcolor{included} 50 & $10^{9}$ & Present 52.12; He21 53.54 & 2.69 \\
+\rowcolor{excluded} 0.021 & $10^{9}$ & Present 37.43; P21 35.4 & 5.57 \\
+\rowcolor{excluded} 1 & $10^{7}$ & PS25 9.03; vdP12 8.47 & 6.40 \\
+\rowcolor{excluded} 1 & $2\times10^{7}$ & PS25 14.75; vdP12 13.76 & 6.94 \\
+\rowcolor{excluded} 0.7 & $10^{9}$ & Present 49.22; ZZS17 53.51 & 8.35 \\
+\end{longtable}
+
+\section{Flagged rows}\label{sec:flags}
+These rows are kept in \texttt{nu\_dataset\_model.csv} and marked in the
+\texttt{Flag} column of \texttt{nu\_dataset\_sources.csv}, so a model can be
+re-run without them.
+
+\begin{itemize}[leftmargin=1.4em, itemsep=0.3em]
+\item \textbf{multistable} ($Pr=0.7$, $Ra=10^9$): the present paper has
+49.22, Zhang, Zhou \& Sun (2017) 53.51. van der Poel et al.\ (2012, Sec.~V)
+show that at exactly this point with $\Gamma\approx1$ the flow can sit in a
+condensed single-roll state ($Nu\approx53$) or an uncondensed state
+($Nu\approx49$--50), each stable for thousands of turnover times. Both
+values are physically correct; for a model that only sees $(Pr, Ra)$ the
+difference is irreducible scatter.
+\item \textbf{flow-state} ($Pr=1$, $Ra\le2\times10^7$, van der Poel 2012):
+6--7\% below Pandey \& Sreenivasan (2025), whose paper locates the
+steady/transient transition in this range. The two runs most likely sit in
+different flow states.
+\item \textbf{conflict} ($Pr=0.01$, $Ra=10^8$, Zhang \& Zhou 2024): 18.06,
+while their own dissipation-based estimate is 17.53 and Yang et al.\
+(2021) read about 16.3. Averaged over only 140 free-fall times.
+\end{itemize}
+
+\begin{longtable}{l l r l l}
+\caption{Flagged rows.}\label{tab:flags}\\
+\toprule
+\textbf{Pr} & \textbf{Ra} & $Nu$ & \textbf{Source} & \textbf{Flag} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Pr} & \textbf{Ra} & $Nu$ & \textbf{Source} & \textbf{Flag} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\rowcolor{excluded} 0.7 & $10^{9}$ & 49.22 & Present & multistable \\
+\rowcolor{excluded} 0.01 & $10^{8}$ & 18.06 & ZZ24 & conflict \\
+\rowcolor{excluded} 0.7 & $10^{9}$ & 53.51 & ZZS17 & multistable \\
+\rowcolor{excluded} 1 & $10^{7}$ & 8.47 & vdP12 & flow-state \\
+\rowcolor{excluded} 1 & $2\times10^{7}$ & 13.76 & vdP12 & flow-state \\
+\end{longtable}
+
+\section{Extracting values from figures}\label{sec:extraction}
+For He et al.\ (2021) and van der Poel et al.\ (2012) the plots are stored
+in the PDF as vector graphics, so the markers' exact coordinates can be read
+from the drawing commands instead of estimated from a picture
+(PyMuPDF \texttt{get\_drawings}):
+\begin{enumerate}[leftmargin=1.6em, itemsep=0.3em]
+\item Axis calibration from the tick marks and tick labels drawn in the
+same figure (e.g.\ He Fig.~5(a): 0.01 in $Nu/Ra^{0.3}$ per 42.01\,pt;
+48.27\,pt per decade of $Ra$).
+\item Each marker identified by its fill or stroke colour and shape, which
+map one-to-one to the legend; legend entries removed by position. Open
+markers drawn as one combined path were split by clustering vertices.
+\item Marker centre = bounding-box centre (squares, circles, diamonds,
+triangles) or vertex mean (regular pentagons, i.e.\ the circumcentre).
+\item Every marker lands within 0.002 decades of a nominal $Ra$ value,
+confirming the calibration. $Nu$ then follows from $Nu/Ra^{0.3}$ times
+$Ra^{0.3}$. Two He markers drawn on top of each other were averaged (they
+differ by 0.3\%).
+\end{enumerate}
+The positional uncertainty (about 0.1\,pt) corresponds to under 0.2\% in
+$Nu$. Raster figures (Yang et al.\ 2021, He et al.\ Fig.~5(b)) were not
+digitized.
+
+\section{Summary}
+\begin{longtable}{p{8.6cm} r r r}
+\caption{Row counts by source.}\label{tab:summary}\\
+\toprule
+\textbf{Source} & \textbf{Rows in source} & \textbf{Included} & \textbf{Excluded} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Source} & \textbf{Rows in source} & \textbf{Included} & \textbf{Excluded} \\
 \midrule
 \endhead
 \bottomrule
@@ -287,14 +721,31 @@ Pandey (2021), Table 1 & 9 & 5 & 4 \\
 Pandey, Tiwari \& Sreenivasan (2026), Table 1 & 14 & 12 & 2 \\
 Pandey, Tiwari \& Sreenivasan (2026), Table 2 (RBC-P) & 12 & 0 & 12 \\
 Pandey \& Sreenivasan (2025), Table 1 & 31 & 29 & 2 \\
+van der Poel et al.\ (2013), Table 2 (2D) & 20 & 16 & 4 \\
+Zhang \& Zhou (2024), Table II & 15 & 15 & 0 \\
+Zhang, Zhou \& Sun (2017), Table 1 & 18 & 18 & 0 \\
+Xu, Shi \& Xi (2019), Table II & 8 & 8 & 0 \\
+He et al.\ (2021), Fig.~5(a) (extracted) & 62 & 62 & 0 \\
+van der Poel et al.\ (2012), Fig.~1(a), $\Gamma=1$ (extracted) & 17 & 16 & 1 \\
 \midrule
-\textbf{Total} & \textbf{79} & \textbf{59} & \textbf{20} \\
+\textbf{Total} & \textbf{219} & \textbf{194} & \textbf{25} \\
 \end{longtable}
-\noindent The 59 included rows across all four sources make up
-\texttt{data/nu\_dataset\_model.csv}. Once the two missing papers
-(references 5 and 6) are obtained, their tables should be added here
-following the same process: reproduce the table, confirm the physical
-setup matches (closed box, same boundary conditions) before including any
-row, and update the summary above.
+\noindent The 194 included rows make up \texttt{data/nu\_dataset\_model.csv}
+(columns \texttt{Pr, Ra, Nu}); \texttt{data/nu\_dataset\_sources.csv} holds
+the same rows with \texttt{Source}, \texttt{Grid}, \texttt{Notes} and
+\texttt{Flag} columns. They span $Pr$ from 0.005 to 100, $Ra$ from $5\times10^{5}$ to $10^{12}$, $Nu$ from 5.2 to 394.2, at 172 distinct
+$(Pr, Ra)$ points.
+
+\paragraph{Coverage gaps.} Above $Ra=10^{10}$ the only data are the
+$Pr=1$ series of Pandey \& Sreenivasan (2025), so any prediction there at
+other $Pr$ is extrapolation. Below $Pr=0.02$ only $Ra=10^7$ and $10^8$ are
+covered (Zhang \& Zhou 2024).
+
+\paragraph{Adding further sources.} Follow the same process: reproduce the
+table, confirm the configuration (closed $\Gamma=1$ box, no-slip, adiabatic
+sidewalls) before including any row, check agreement at overlapping points,
+and update the summary above. Candidates: Huang \& Zhou (2013, J.\ Fluid Mech.)
+and the exact table behind He et al.\ (2021), both obtainable
+from the authors.
 
 \end{document}

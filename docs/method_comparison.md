@@ -4,87 +4,90 @@ The paper's Sec. 3.3 says it tried multiple linear regression, polynomial
 regression, and support vector regression before settling on a random forest
 (5 trees, 70/30 split, R² = 0.98 on their 55-point set). `scripts/compare_models.py`
 runs all three of those plus the random forest baseline and three suggested
-alternatives, using repeated 5-fold cross-validation (100 train/test splits
-per method total) rather than one split — with only 59 points, a single
-split can make a method look better or worse than it really is, so every
-number below is a mean ± standard deviation across those 100 splits.
+alternatives on the expanded **194-row** dataset (172 distinct (Pr, Ra)
+points, 10 papers).
 
-## Results (5-fold CV × 20 repeats = 100 splits)
+Two changes from the 59-row version of this comparison:
 
-| Method | mean R² | std | Notes |
-|---|---|---|---|
-| Power-law fit (log-log linear regression) | 0.991 | 0.009 | `Nu = 0.087 * Ra^0.303 * Pr^0.023`. Both best *and* most stable — the tiny std means this holds up no matter which points land in the test fold. The Ra exponent (0.303) sits right next to the classical Nu ~ Ra^(1/3) scaling from RBC theory. |
-| Gaussian process regression | 0.989 | 0.052 | Nearly as good on average, but 5x more variable fold-to-fold. Still the only method here that also reports a predictive uncertainty on each prediction. |
-| Support vector regression | 0.898 | 0.157 | Untuned (C=100, epsilon=0.5); the wide std suggests it's sensitive to which points it sees. |
-| Random forest (baseline, 5 trees) | 0.891 | 0.100 | The paper's method. Notably lower than the 0.971 a single lucky split gave earlier — cross-validation is the more honest number. |
-| Gradient boosting | 0.885 | 0.097 | About the same as the random forest; doesn't show an edge on a dataset this small. |
-| Polynomial regression (degree 2) | 0.758 | 0.269 | Single-split R² (0.945) was misleadingly high — under CV it's both worse and unstable, consistent with a degree-2 fit overreacting to whichever high-Ra points happen to be in the training fold. |
-| Multiple linear regression | -0.096 | 1.101 | Mean R² *below zero* — on some folds it does worse than just predicting the average Nu. Confirms the paper's own finding that linear regression underfits this relationship, more starkly than the single split showed. |
+- **Grouped cross-validation.** 20 (Pr, Ra) points are reported by more than
+  one paper. Plain k-fold could put one paper's run in train and another
+  paper's run of the *same* point in test, which leaks information. Folds are
+  now grouped by (Pr, Ra), 5-fold × 20 reshuffles = 100 splits per method.
+- **Mean relative error (MAPE) as the headline metric.** Nu spans 5 to 394.
+  R² is dominated by the handful of Ra ≥ 10¹¹ points and can hide 10 %
+  errors everywhere else, so methods are ranked by MAPE, with R² alongside.
 
-**The single train/test split from before was actively misleading** for two
-of these methods (random forest looked 8 points better than it should, degree-2
-polynomial regression looked 19 points better) — this is exactly why doing
-cross-validation before trusting a comparison matters here.
+For the much fuller study (grouped train/val/test with ranges per split,
+hyperparameter tuning, learning curves, active learning curves, extrapolation
+tests, GP response surface) see `notebooks/comprehensive_study.ipynb`.
 
-## What the bar chart hides: `results/top_methods_predicted_vs_actual.png`
+## Results (194 rows, grouped 5-fold CV × 20 repeats = 100 splits)
 
-The table above says the power-law fit and Gaussian process beat the random
-forest, but not *where* the random forest goes wrong. This plot puts all
-three side by side as predicted-vs-actual scatter plots (5-fold CV, each
-point predicted by a model that never trained on it):
+| Method | MAPE % | std | mean R² | std |
+|---|---|---|---|---|
+| Gaussian process regression | **3.39** | 1.29 | 0.996 | 0.011 |
+| Support vector regression | 4.52 | 1.85 | 0.919 | 0.144 |
+| Gradient boosting | 5.57 | 1.36 | 0.923 | 0.078 |
+| Power-law fit `Nu = 0.0999·Ra^0.298·Pr^0.031` | 5.61 | 1.26 | **0.996** | **0.003** |
+| Random forest (baseline, 5 trees) | 5.97 | 1.37 | 0.923 | 0.102 |
+| Polynomial regression (deg 2) | 33.4 | 13.3 | 0.896 | 0.054 |
+| Multiple linear regression | 67.3 | 22.3 | 0.642 | 0.139 |
+
+With 59 rows the random forest's error was 12.4 %; with 194 it is 6.0 %. The
+GP went from 5.4 % to 3.4 %. Every flexible method improved because the
+Ra = 10⁸–10¹⁰ region is now densely sampled.
+
+## What the table hides: `results/top_methods_predicted_vs_actual.png`
 
 ![Top methods: predicted vs actual](../results/top_methods_predicted_vs_actual.png)
 
-The random forest panel shows a clear, systematic pattern: the four highest-Nu
-points (Nu > 80) all fall *below* the perfect-prediction line — the model
-underpredicts every one of them. This isn't random scatter, it's a known
-limitation of trees: a random forest can only predict values it saw in
-training (it averages leaf values), so it can't extrapolate past the highest
-Nu it was trained on. With only a handful of points out at high Ra, whichever
-ones land in the test fold get underpredicted almost by construction. The
-power-law and Gaussian process panels don't show this bias — both are smooth
-functions that extrapolate naturally, so they track the high-Nu points as
-well as the low-Nu ones. This is the real reason the power-law fit and GP
-outperform the random forest here, not just a marginally better R².
+The three panels differ only at the top end. Above Ra = 10¹⁰ the dataset has
+only the Pr = 1 series of Pandey & Sreenivasan (2025), so predicting those
+points is **extrapolation in Ra**:
 
-## Why these three suggestions specifically
+- **Random forest:** flat at Nu ≈ 120 for all three highest points. Trees
+  average leaf values and cannot predict beyond what they saw.
+- **Gaussian process (raw-Nu target):** better, but sags back toward the
+  mean (Nu = 272 instead of 394). An RBF-kernel GP reverts to its prior mean
+  far from data.
+- **Power law:** tracks them, because a power law *is* the right
+  extrapolating shape. That is why its R² is the best and most stable even
+  though its MAPE is mid-table: in the dense region a single global power law
+  is too rigid (Nu's Pr-dependence flattens above Pr ≈ 1), and in the sparse
+  high-Ra region it is the only model that extrapolates.
 
-**Gaussian process regression.** DNS values here carry real uncertainty (the
-error bars in `docs/data_sources.pdf`'s tables) — a GP is one of the few
-methods that reports how confident it is in each prediction, not just a
-point estimate. That matters if this model is ever used to decide *which new
-(Pr, Ra) point is worth simulating next* (a GP naturally supports this kind
-of "where should we look next" reasoning; a random forest doesn't). The
-cross-validated std (0.052, five times the power-law fit's) confirms the
-earlier caveat was warranted: a GP with a flexible kernel can look great on
-one lucky split and less so on others.
+The notebook resolves this tension with two models not in this script: a GP
+on **log Nu** (which extrapolates as a local power law) and a **power-law
+mean + GP residual** model, which keeps the power law's extrapolation and
+lets the GP fix the Pr-curvature. Both beat everything here on grouped CV:
+1.8 % and 1.9 % MAPE (worst single point about 11–14 %), against 3.4 % for
+the raw-target GP and 6.0 % for the paper's random forest.
 
-**Power-law fit.** Heat transport in convection is known to follow power
-laws (the paper itself fits Nu ~ Pr^0.08 in Fig. 3), so fitting
-`Nu = C · Ra^a · Pr^b` directly is the most physically natural model here —
-and unlike a random forest or GP, it hands you two numbers you can quote and
-compare against the literature. It fitting almost as well as the far more
-flexible GP suggests the underlying relationship really is close to a single
-global power law over this range, which is itself a useful finding to
-mention in a writeup.
+## Why these methods specifically
 
-**Gradient boosting.** A natural "next" tree-ensemble to try given the paper
-already uses trees. It doesn't win here, most likely because gradient
-boosting typically needs more data than 59 points to outperform a random
-forest — worth revisiting once the two missing papers are added and the
-dataset grows.
+**Gaussian process regression.** It is one of the few methods that reports
+how confident it is in each prediction. That makes it the natural engine for
+*active learning*: deciding which new (Pr, Ra) is worth simulating next. The
+notebook's Section 7 tests exactly that.
+
+**Power-law fit.** Heat transport in convection follows power laws (the paper
+itself fits Nu ~ Pr^0.08 in Fig. 3), so `Nu = C·Ra^a·Pr^b` is the most
+physically natural model, and it hands you two exponents you can compare
+with the literature. The fitted Ra exponent, 0.298, sits next to the
+Nu ~ Ra^0.3 scaling usual for 2D convection at these Ra.
+
+**Gradient boosting.** The natural next tree ensemble. It now matches the
+power law on MAPE, which it did not on 59 rows: tree ensembles needed more
+data. It still cannot extrapolate in Ra.
 
 ## Caveats
 
-- SVR, gradient boosting, and the GP kernel all used reasonable-but-untuned
-  hyperparameters; a `GridSearchCV` pass (nested inside the cross-validation,
-  to avoid leaking test-fold information into the tuning) could change their
-  scores meaningfully — SVR's wide std (0.157) in particular suggests it has
-  room to improve.
-- `notebooks/analysis.ipynb` and `scripts/baseline_random_forest.py` still
-  report the single-split R² (0.971) to match the paper's own reporting
-  convention — keep in mind the cross-validated, more honest number for the
-  same model is 0.891 ± 0.100.
-- None of this changes once the van der Poel (2013) and Zhang & Zhou (2024)
-  data are added — re-run `scripts/compare_models.py` after `data/nu_dataset_model.csv`
-  is updated.
+- An irreducible scatter floor of roughly 1–3 % comes from 2D flow-state
+  multistability: at some (Pr, Ra) the same simulation can settle into
+  different roll states with different Nu (van der Poel et al. 2012, 2013).
+  The flagged rows in `data/nu_dataset_sources.csv` are the clearest cases.
+- The script uses untuned hyperparameters. The notebook tunes them on a
+  validation split.
+- `notebooks/analysis.ipynb` and `scripts/baseline_random_forest.py` keep the
+  paper's single random 70/30 split (now R² = 0.973) for comparison with the
+  paper. That number is optimistic for the reasons above.
