@@ -1,8 +1,14 @@
 """
 Compares the baseline random forest against other regression methods on the
-Nu(Pr, Ra) data, using repeated k-fold cross-validation rather than a single
-train/test split (the dataset is only 59 points, so one split can make a
-method look better or worse than it really is).
+Nu(Pr, Ra) data, using repeated *grouped* k-fold cross-validation rather than a
+single train/test split. Grouped: rows with the same (Pr, Ra) reported by
+different papers always land in the same fold, so a physical point never sits
+in both train and test. Reports R^2 and the mean relative error (MAPE); with
+Nu spanning 5-394, R^2 is dominated by the few largest values, so MAPE is the
+fairer number.
+
+The full study (learning curves, active learning, extrapolation tests) is in
+notebooks/comprehensive_study.ipynb.
 
 Includes the three methods the paper says it tried before settling on random
 forest (multiple linear regression, polynomial regression, support vector
@@ -15,8 +21,8 @@ Usage:
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.base import BaseEstimator, RegressorMixin
-from sklearn.model_selection import RepeatedKFold, KFold, cross_val_score, cross_val_predict
+from sklearn.base import BaseEstimator, RegressorMixin, clone
+from sklearn.model_selection import GroupKFold, cross_val_predict
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 from sklearn.linear_model import LinearRegression
@@ -26,12 +32,29 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel, WhiteKernel
 from sklearn.metrics import r2_score
 
-from baseline_random_forest import load_data, RANDOM_STATE
+from baseline_random_forest import DATA_PATH, RANDOM_STATE
 
 OUTPUT_PLOT = "results/model_comparison.png"
 PREDICTIONS_PLOT = "results/top_methods_predicted_vs_actual.png"
 N_SPLITS = 5
 N_REPEATS = 20  # 100 train/test splits total per method, for a stable mean +/- std
+
+
+def load_data(path=DATA_PATH):
+    df = pd.read_csv(path)
+    X = np.log10(df[["Pr", "Ra"]])
+    y = df["Nu"].to_numpy()
+    groups = (df["Pr"].round(4).astype(str) + "|" + df["Ra"].map(lambda v: f"{v:.4g}")).to_numpy()
+    return X, y, groups
+
+
+def grouped_splits(groups, n_splits=N_SPLITS, n_repeats=N_REPEATS):
+    """Repeated GroupKFold: reshuffle the group labels each repeat."""
+    ug = np.unique(groups)
+    for r in range(n_repeats):
+        perm = dict(zip(ug, np.random.default_rng(r).permutation(len(ug))))
+        g = np.array([perm[x] for x in groups])
+        yield from GroupKFold(n_splits).split(np.zeros(len(groups)), groups=g)
 
 # Methods to show as predicted-vs-actual scatter plots (in addition to the
 # summary bar chart) - the paper's baseline, plus the two methods that beat it.
@@ -91,7 +114,7 @@ def build_models():
     return models
 
 
-def plot_predictions(X, y, models):
+def plot_predictions(X, y, groups, models):
     """Predicted-vs-actual scatter for the methods in PLOT_METHODS.
 
     Uses a single (non-repeated) 5-fold CV via cross_val_predict, so every
@@ -103,7 +126,7 @@ def plot_predictions(X, y, models):
     is a single 5-fold pass, needed because cross_val_predict requires
     each point predicted exactly once).
     """
-    cv_single = KFold(n_splits=N_SPLITS, shuffle=True, random_state=RANDOM_STATE)
+    cv_single = list(grouped_splits(groups, n_repeats=1))
     fig, axes = plt.subplots(1, len(PLOT_METHODS), figsize=(5 * len(PLOT_METHODS), 4.8))
     for ax, name in zip(axes, PLOT_METHODS):
         model = models[name]
@@ -114,7 +137,8 @@ def plot_predictions(X, y, models):
         ax.plot(lims, lims, "r--", label="perfect prediction")
         ax.set_xlabel("Nu (actual)")
         ax.set_ylabel("Nu (predicted)")
-        ax.set_title(f"{name}\n(5-fold CV, R^2 = {r2:.3f})", fontsize=10)
+        mape = 100 * np.mean(np.abs(y_pred / y - 1))
+        ax.set_title(f"{name}\n(grouped 5-fold CV, R^2 = {r2:.3f}, MAPE = {mape:.1f}%)", fontsize=10)
         ax.legend(fontsize=8)
     plt.tight_layout()
     plt.savefig(PREDICTIONS_PLOT, dpi=150)
@@ -122,47 +146,47 @@ def plot_predictions(X, y, models):
 
 
 def main():
-    X, y = load_data()
+    X, y, groups = load_data()
     models = build_models()
-    cv = RepeatedKFold(n_splits=N_SPLITS, n_repeats=N_REPEATS, random_state=RANDOM_STATE)
+    splits = list(grouped_splits(groups))
 
     rows = []
     for name, model in models.items():
-        scores = cross_val_score(model, X, y, cv=cv, scoring="r2")
-        rows.append((name, scores.mean(), scores.std(), scores))
+        r2s, mapes = [], []
+        for tr, te in splits:
+            m = clone(model).fit(X.iloc[tr], y[tr])
+            p = m.predict(X.iloc[te])
+            r2s.append(r2_score(y[te], p))
+            mapes.append(100 * np.mean(np.abs(p / y[te] - 1)))
+        rows.append((name, np.mean(r2s), np.std(r2s), np.mean(mapes), np.std(mapes)))
 
-    rows.sort(key=lambda r: r[1], reverse=True)
+    rows.sort(key=lambda r: r[3])
 
-    n_folds = N_SPLITS * N_REPEATS
-    print(f"{len(X)} points, {N_SPLITS}-fold CV repeated {N_REPEATS} times "
-          f"({n_folds} train/test splits per method)\n")
-    print(f"{'Method':42s} {'mean R^2':>10s} {'std':>8s}")
-    print("-" * 64)
-    for name, mean, std, _ in rows:
-        print(f"{name:42s} {mean:10.3f} {std:8.3f}")
+    n_folds = len(splits)
+    print(f"{len(X)} rows ({len(np.unique(groups))} distinct (Pr, Ra) points), grouped {N_SPLITS}-fold CV "
+          f"repeated {N_REPEATS} times ({n_folds} train/test splits per method)\n")
+    print(f"{'Method':42s} {'MAPE %':>8s} {'std':>6s} {'mean R^2':>10s} {'std':>7s}")
+    print("-" * 78)
+    for name, r2m, r2s_, mm, ms in rows:
+        print(f"{name:42s} {mm:8.2f} {ms:6.2f} {r2m:10.3f} {r2s_:7.3f}")
 
-    # Report the power-law formula fit on the full dataset (for interpretability,
-    # not part of the CV score above)
     pl = PowerLawRegressor().fit(X, y)
     print(f"\nPower-law fit on the full dataset: {pl.formula()}")
 
-    # Bar chart with error bars (mean +/- 1 std across folds)
     names = [r[0] for r in rows]
-    means = [r[1] for r in rows]
-    stds = [r[2] for r in rows]
-    colors = ["#2a9d5c" if n.startswith("Random forest") else "#4a7fb5" for n in names]
-
+    means = [r[3] for r in rows]
+    stds = [r[4] for r in rows]
+    colors = ["#eb6834" if n.startswith("Random forest") else "#2a78d6" for n in names]
     plt.figure(figsize=(8, 5))
     plt.barh(names, means, xerr=stds, color=colors, capsize=3)
-    plt.xlabel(f"R^2 (mean +/- std over {n_folds} CV splits)")
-    plt.title(f"Model comparison ({N_SPLITS}-fold CV x {N_REPEATS} repeats)")
+    plt.xlabel(f"mean relative error, % (mean +/- std over {n_folds} grouped CV splits)")
+    plt.title(f"Model comparison ({len(X)} rows, grouped {N_SPLITS}-fold CV x {N_REPEATS})")
     plt.gca().invert_yaxis()
-    plt.xlim(left=min(0, min(m - s for m, s in zip(means, stds)) - 0.05))
     plt.tight_layout()
     plt.savefig(OUTPUT_PLOT, dpi=150)
     print(f"\nSaved plot to {OUTPUT_PLOT}")
 
-    plot_predictions(X, y, models)
+    plot_predictions(X, y, groups, models)
 
 
 if __name__ == "__main__":
